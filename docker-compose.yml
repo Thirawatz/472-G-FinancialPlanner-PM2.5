@@ -14,11 +14,32 @@ services:
       - ./:/var/www
     networks:
       - financial-planner
+    depends_on:
+      - db
     environment:
-      DB_HOST: localhost
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
       DB_DATABASE: financial_planners
-      DB_USERNAME: financial_planner
-      DB_PASSWORD: secret
+      DB_USERNAME: root
+      DB_PASSWORD: 
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: financial-planner-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: 
+      PMA_USER: root
+      PMA_PASSWORD: 
+    networks:
+      - financial-planner
+    depends_on:
+      - db
 
   nginx:
     image: nginx:alpine
@@ -34,23 +55,10 @@ services:
     depends_on:
       - app
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: financial-planner-phpmyadmin
-    restart: unless-stopped
-    environment:
-      PMA_HOST: localhost  # เปลี่ยนไปเป็น localhost หรือฐานข้อมูลอื่นที่ใช้
-      PMA_USER: financial_planner
-      PMA_PASSWORD: secret
-    ports:
-      - "8080:80"
-    networks:
-      - financial-planner
-
 networks:
   financial-planner:
     driver: bridge
 
 volumes:
   dbdata:
-    driver: local
+    driver: local 
