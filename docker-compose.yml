@@ -23,7 +23,7 @@ services:
       DB_PASSWORD: secret
 
   db:
-    image: mysql:8.0
+    image: mariadb:latest
     container_name: financial-planner-db
     restart: unless-stopped
     environment:
@@ -52,10 +52,25 @@ services:
     depends_on:
       - app
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: financial-planner-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_USER: financial_planner
+      PMA_PASSWORD: secret
+    ports:
+      - "8080:80"
+    networks:
+      - financial-planner
+    depends_on:
+      - db
+
 networks:
   financial-planner:
     driver: bridge
 
 volumes:
   dbdata:
-    driver: local 
+    driver: local
